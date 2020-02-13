@@ -7,7 +7,7 @@
 int main(int argc, char** argv) {
 
 
-	printf("This is a test pls go to github\n");
+	printf("come back to me\n");
 
 	return 0;
 
