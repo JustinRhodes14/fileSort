@@ -7,7 +7,10 @@
 #include <unistd.h>
 #include <string.h>
 
-
+typedef struct _node {
+	void *data;
+	struct _node *next;
+}Node;
 
 int main(int argc, char** argv) {
 
@@ -19,15 +22,30 @@ int main(int argc, char** argv) {
 	char type = argv[1][1];
 	
 	int fd = open("test.txt",O_RDONLY);	
-		
+	
+	Node *head = (Node*)malloc(sizeof(Node));
+
+	head->data = "hello"; 
+	head->next = NULL;
+	printf("val of head: %s\n",head->data);	
+	
 	char buffer[101];
 	memset(buffer,'\0',101);	
 	int bytesRead = 1;
 	int curr = 0;
 	do {
+		
+		if (curr >= 100) {
+			curr = 0;
+			Node *temp = (Node*)malloc(sizeof(Node));
+			temp->data = buffer;
+			temp->next = head->next;
+			head->next = temp;
+			memset(buffer,'\0',101);	
+		}
 		bytesRead = read(fd,buffer,100-curr);
 		curr += bytesRead;		
-	}while(bytesRead > 0 && curr < 100);
+	}while(bytesRead > 0);
 	
 	close(fd);	
 	
@@ -39,6 +57,9 @@ int main(int argc, char** argv) {
 
 }
 
+void LLIterator (Node *ptr) {
+
+}
 
 int badChar(char buffer) {
 	if(buffer == '\t' || buffer == '_' || buffer == '\n' || buffer == ' ') {
