@@ -13,16 +13,15 @@ int main(int argc, char** argv) {
 
 	if (argc < 2) {
 		printf("Fatal Error: expected 2 arguments, got less\n");
+		exit(0);
 	}
-
-	int number = 2;
 	
-	int sum = number + 2;
+	char type = argv[1][1];
 	
 	int fd = open("test.txt",O_RDONLY);	
 		
 	char buffer[101];
-	int t = memset(buffer,'\0',101);	
+	memset(buffer,'\0',101);	
 	int bytesRead = 1;
 	int curr = 0;
 	do {
@@ -34,12 +33,17 @@ int main(int argc, char** argv) {
 	
 	printf("buffer bytes: %d\n",bytesRead);
 	printf("buffer: %s\n",buffer);
-	//printf("val of errno: %d\n", errno);
-	//printf("error is: %s\n", strerror(errno));
-	//printf("come back to me\n");
-	//printf("more tests\n");
-	//printf("work pls\n");
+	printf("type: %c\n", type);
 	return 0;
 
 
+}
+
+
+int badChar(char buffer) {
+	if(buffer == '\t' || buffer == '_' || buffer == '\n' || buffer == ' ') {
+		return 1;
+	}	
+
+	return 0;
 }
