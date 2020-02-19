@@ -12,6 +12,8 @@ typedef struct _node {
 	struct _node *next;
 }Node;
 
+void LLIterator(Node*);
+
 int main(int argc, char** argv) {
 
 	if (argc < 2) {
@@ -48,7 +50,7 @@ int main(int argc, char** argv) {
 	}while(bytesRead > 0);
 	
 	close(fd);	
-	
+	LLIterator(head);
 	printf("buffer bytes: %d\n",bytesRead);
 	printf("buffer: %s\n",buffer);
 	printf("type: %c\n", type);
@@ -58,7 +60,11 @@ int main(int argc, char** argv) {
 }
 
 void LLIterator (Node *ptr) {
-
+	while(ptr != NULL) {
+		printf("LNode: %s->",ptr->data);
+		ptr = ptr->next;
+	}
+	printf("\n");
 }
 
 int badChar(char buffer) {
