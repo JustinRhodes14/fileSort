@@ -14,6 +14,8 @@ typedef struct _node {
 
 void LLIterator(Node*);
 
+//lols
+
 int main(int argc, char** argv) {
 
 	if (argc < 2) {
