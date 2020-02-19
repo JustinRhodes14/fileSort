@@ -19,6 +19,8 @@ void freeLL(Node*);
 enum boolean commaDetect(char);
 enum boolean badChar(char);
 
+//lols
+
 int main(int argc, char** argv) {
 
 	if (argc < 2) {
