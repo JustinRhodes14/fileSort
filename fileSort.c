@@ -23,14 +23,14 @@ enum boolean badChar(char);
 
 int main(int argc, char** argv) {
 
-	if (argc < 2) {
-		printf("Fatal Error: expected 2 arguments, got less\n");
+	if (argc < 3) {
+		printf("Fatal Error: expected 3 arguments, got less\n");
 		exit(0);
 	}
 	
-	char type = argv[1][1];
+	char type = argv[2][1];
 	
-	int fd = open("test.txt",O_RDONLY);	
+	int fd = open(argv[1],O_RDONLY);	
 	
 	Node *head = (Node*)malloc(sizeof(Node));
 	head->data = "first";
