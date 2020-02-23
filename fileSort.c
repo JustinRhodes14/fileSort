@@ -40,8 +40,7 @@ int main(int argc, char** argv) {
 	if (argv[1][0] != '-') {
 		printf("Fatal Error: %s is not a valid sort flag\n", argv[1]);
 		exit(0);
-	} else if (argv[1][1] == 'q' || argv[1][1] == 'i') {
-	} else {
+	} else if (argv[1][1] != 'q' && argv[1][1] != 'i') {
 		printf("Fatal Error: %s is not a valid sort flag\n", argv[1]);
 		exit(0);
 	}
