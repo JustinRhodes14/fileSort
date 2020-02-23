@@ -117,7 +117,7 @@ int main(int argc, char** argv) {
 						   //after the file is finished being browsed
 	//END OF TOKENIZER FUNCTION -----------------------------------------------------------
 	//LLIterator(head);, will use this later
-	printf("LLSize: %d\n", LLSize);
+	//printf("LLSize: %d\n", LLSize);
 	
 	
 	int  (*fptr)(void*,void*);
@@ -146,7 +146,8 @@ int main(int argc, char** argv) {
 			i++;
 		}	
 	}
-	*/	
+	*/
+	LLIterator(head);	
 	close(fd);
 	return 0;
 
@@ -156,12 +157,12 @@ int main(int argc, char** argv) {
 void LLIterator (Node *ptr) {
 	if (type == true) {//strings
 		while(ptr != NULL) {
-			printf("LNode: %s\n",ptr->word);
+			printf("%s\n",ptr->word);
 			ptr = ptr->next;
 		}
 	} else {//ints
 		while (ptr != NULL) {
-			printf("LNode: %d\n",ptr->data);
+			printf("%d\n",ptr->data);
 			ptr = ptr->next;
 		}
 	}
@@ -198,13 +199,28 @@ enum boolean commaDetect(char input) {
 
 int comparator (void* item1, void* item2) { //using global variable type in this case to determine whether we are working with strings or ints
 	if (type == true) { //String comparison 
-		int comp = strcmp(item1,item2);//works on void* as well, tested this and it properly compares the string
-		if (comp > 0) {
-			return 1; //returns item 1 since it is greater
-		} else if (comp == 0) {
-			return 1; //returns item 1 since they are equal
-		} else if (comp < 0) {
-			return 2; //returns item 2 since item 1 is less
+		int least;
+		char str1[257];
+		char str2[257];
+		int len1 = strlen(str1);
+		int len2 = strlen(str2);
+		strcpy(str1,item1);
+		strcpy(str2,item2);
+		if (len1 > len2) {
+			least = len2;	
+		} else {
+			least = len1;
+		}
+		int i = 0;
+		while (i < least) {
+			if (str1[i] == str2[i]) {
+				i++;
+				continue;
+			} else if (str1[i] > str2[i]) {
+				return 2;
+			} else {
+				return 1;
+			}
 		}
 	} else { //int comparison
 		if (*(int*)item1 == *(int*)item2) { //casts them as ints then dereferences them to avoid errors i think
@@ -220,7 +236,8 @@ int comparator (void* item1, void* item2) { //using global variable type in this
 }
 //Insertion sort, the integer sort is working fine, but the string sort isn't working, I think its an isssue with the comparator
 //or the insertion sort I wrote for strings itself
-int insertionSort(void* toSort, int (*comparator)(void*,void*)) {
+int insertionSort(void* toSort, int (*comparator)(void*,void*)) { //String sort isn't working for certain file formats, unsure why but I'll figure it out
+//tmrw
 	Node* ptr = (Node*)toSort;
 	Node* sorted = (Node*)toSort;
 	if (type == false) { //int sorting
@@ -229,7 +246,7 @@ int insertionSort(void* toSort, int (*comparator)(void*,void*)) {
 		while (i < LLSize) {
 			intSort[i] = ptr->data;
 			ptr = ptr->next;
-			printf("int: %d\n",intSort[i]);
+			//printf("int: %d\n",intSort[i]);
 			i++;
 		}
 		//insertion soort
@@ -245,11 +262,11 @@ int insertionSort(void* toSort, int (*comparator)(void*,void*)) {
 			intSort[k+1] = comp;
 			j++;
 		}
-		printf("SORTED VALS\n");
+		//printf("SORTED VALS\n");
 		int g = 0;
 		while (g < LLSize) {
 			sorted->data = intSort[g];
-			printf("Sorted: %d\n",sorted->data);
+			//printf("Sorted: %d\n",sorted->data);
 			sorted = sorted->next;
 			g++;	
 		}
@@ -259,27 +276,28 @@ int insertionSort(void* toSort, int (*comparator)(void*,void*)) {
 		while (i < LLSize) {
 			stringSort[i] = ptr->word;
 			ptr = ptr->next;
-			printf("string: %s\n",stringSort[i]);
+			//printf("string: %s\n",stringSort[i]);
 			i++;
 		}
 		//insertion sort
 		int j = 1;
 		int k = 0;
 		while (j < LLSize) {
-			char* comp = stringSort[j];
+			char* comp;
+			strcpy(comp,stringSort[j]);
 			k = j-1;
-			while (k >= 0 && comparator(stringSort[j],comp) == 1) {
-				stringSort[k+1] = stringSort[k];
+			while (k >= 0 && comparator(stringSort[k],comp) == 2) {
+				strcpy(stringSort[k+1],stringSort[k]);
 				k--;
 			}
-			stringSort[k+1] = comp;
+			strcpy(stringSort[k+1],comp);
 			j++;
 		}
-		printf("SORTED VALS\n");
+		//printf("SORTED VALS\n");
 		int g = 0;
 		while (g < LLSize) {
 			strcpy(sorted->word,stringSort[g]);
-			printf("Sorted: %s\n", stringSort[g]);
+			//printf("Sorted: %s\n", sorted->word);
 			sorted = sorted->next;
 			g++;
 		}
