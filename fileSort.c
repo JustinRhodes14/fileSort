@@ -29,12 +29,19 @@ enum boolean commaDetect(char);
 enum boolean badChar(char);
 int insertionSort(void* toSort, int (*comparator)(void*,void*));
 int quickSort(void* toSort, int (*comparator)(void*,void*));
-//lols
 
 int main(int argc, char** argv) {
 
 	if (argc < 3) {
 		printf("Fatal Error: expected 3 arguments, got less\n");
+		exit(0);
+	}
+	
+	if (argv[1][0] != '-') {
+		printf("Fatal Error: %s is not a valid sort flag\n", argv[1]);
+		exit(0);
+	} else if (argv[1][1] != 'q' && argv[1][1] != 'i') {
+		printf("Fatal Error: %s is not a valid sort flag\n", argv[1]);
 		exit(0);
 	}
 	
