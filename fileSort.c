@@ -6,6 +6,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
+#include <ctype.h>
 //TODO:
 //QUICK SORT
 //DEBUGGING/FIXUPS
@@ -134,7 +135,14 @@ int main(int argc, char** argv) { //need to fix it for empty strings like ",," a
 	
 	int  (*fptr)(void*,void*);
 	fptr = comparator;	
-	int t = insertionSort(head,fptr);	
+	if (sort == 'i') {
+		int t = insertionSort(head,fptr);	
+	} else {
+		printf("quicksort under maintenance lmao\n");
+		printf("\n");
+		int t = quickSort(head, fptr);
+	}
+
 	/*
 	int i = 0;
 	
@@ -321,7 +329,42 @@ int quickSort(void* toSort, int (*comparator)(void*,void*)) {
 //quicksort is recursive in nature so we need to make a seperate function for this function to call
 //maybe have the quicksort function return an array or make 2 (one for strings, one for ints) and call
 //it accordingly
+	printf("size of LL is: %d\n", LLSize);
+	Node* ptr = (Node*)toSort;
+	Node* sorted = (Node*)toSort;
+	int high = LLSize;
+	if(type == false) { //int
+		int* intSort = (int*)malloc(LLSize * sizeof(int));
+		int i = 0;
+		while (i < LLSize) {
+			intSort[i] = ptr->data;
+			ptr = ptr->next;
+			//printf("int: %d\n",intSort[i]);
+			i++;
+		}
+
+			
+	} else { //string
+		char** stringSort = (char**)malloc(LLSize * sizeof(char*));
+		int i = 0;
+		while (i < LLSize) {
+			stringSort[i] = ptr->word;
+			ptr = ptr->next;
+			//printf("string: %s\n",stringSort[i]);
+			i++;
+		}
+	}
 	
+	
+}
+
+int partition(int* arr, int low, int high, int(*comparator)(void*,void*)) {
+
+}	
+
+void quickSortRec(int* arr, int low, int high, int(*comparator)(void*,void*)) {
+
+
 }
 
 
