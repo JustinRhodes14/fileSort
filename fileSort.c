@@ -7,7 +7,8 @@
 #include <unistd.h>
 #include <string.h>
 //TODO:
-//TYPE AGNOSTIC SORTS
+//QUICK SORT
+//DEBUGGING/FIXUPS
 enum boolean {true = 1, false = 0};//boolean var, do enum boolean to declare a new one (see function prototype below)
 
 
@@ -30,7 +31,9 @@ enum boolean badChar(char);
 int insertionSort(void* toSort, int (*comparator)(void*,void*));
 int quickSort(void* toSort, int (*comparator)(void*,void*));
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv) { //need to fix it for empty strings like ",," and ", ," or ",\t,",
+//also need to add a function to free the LL
+//apparently ,, in int version counts as a zero
 
 	if (argc < 3) {
 		printf("Fatal Error: expected 3 arguments, got less\n");
@@ -61,7 +64,7 @@ int main(int argc, char** argv) {
 	//DESCRIPTION: Tokenizer removes bad characters (spaces, tabs, new lines, and underscores) and only
 	//stores ascii character data, once a comma is reached, the tokenizer stores it in the respective linked list data type
 	//and then we can print it out through the iterator 
-	do {
+		do {
 		char buffer;
 		bytesRead = read(fd,&buffer,1);
 		if (commaDetect(buffer) == true){//Need to fix these LL's yo
@@ -108,18 +111,20 @@ int main(int argc, char** argv) {
 		}
 		count+= bytesRead;
 	}while(bytesRead > 0);
+	if (strlen(word) != 0 || badChar(word[0] == false)) {
 	LLSize++;
 	Node *temp = (Node*)malloc(sizeof(Node));
 	//temp->word = word;
-	if (type == false) {//type is ints
-		temp->data = atoi(word);
-	} else {//type is strings
-		strcpy(temp->word,word);
+		if (type == false) {//type is ints
+			temp->data = atoi(word);
+		} else {//type is strings
+			strcpy(temp->word,word);
+		}
+		temp->next = head->next;
+		temp->prev = head;
+		temp->prev = NULL;
+		head->next = temp;
 	}
-	temp->next = head->next;
-	temp->prev = head;
-	temp->prev = NULL;
-	head->next = temp;
 	//printf("val of word: %s\n", word); //This prints the last word of the tokenizer since it is stored
 						   //after the file is finished being browsed
 	//END OF TOKENIZER FUNCTION -----------------------------------------------------------
@@ -313,7 +318,10 @@ int insertionSort(void* toSort, int (*comparator)(void*,void*)) { //String sort 
 }
 
 int quickSort(void* toSort, int (*comparator)(void*,void*)) {
-
+//quicksort is recursive in nature so we need to make a seperate function for this function to call
+//maybe have the quicksort function return an array or make 2 (one for strings, one for ints) and call
+//it accordingly
+	
 }
 
 
