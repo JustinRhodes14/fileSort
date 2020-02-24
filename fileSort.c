@@ -140,8 +140,8 @@ int main(int argc, char** argv) { //need to fix it for empty strings like ",," a
 	if (sort == 'i') {
 		int t = insertionSort(head,fptr);	
 	} else {
-		printf("quicksort under maintenance lmao\n");
-		printf("\n");
+		//printf("quicksort under maintenance lmao\n");
+		//printf("\n");
 		int t = quickSort(head, fptr);
 	}
 
@@ -331,8 +331,8 @@ int quickSort(void* toSort, int (*comparator)(void*,void*)) {
 //quicksort is recursive in nature so we need to make a seperate function for this function to call
 //maybe have the quicksort function return an array or make 2 (one for strings, one for ints) and call
 //it accordingly
-	printf("size of LL is: %d\n", LLSize);
-	printf("\n");
+	//printf("size of LL is: %d\n", LLSize);
+	//printf("\n");
 	Node* ptr = (Node*)toSort;
 	Node* sorted = (Node*)toSort;
 	int high = LLSize-1;
