@@ -209,10 +209,10 @@ int comparator (void* item1, void* item2) { //using global variable type in this
 		int least;
 		char str1[257];
 		char str2[257];
-		int len1 = strlen(str1);
-		int len2 = strlen(str2);
 		strcpy(str1,item1);
 		strcpy(str2,item2);
+		int len1 = strlen(item1);
+		int len2 = strlen(item2);
 		if (len1 > len2) {
 			least = len2;	
 		} else {
@@ -220,15 +220,12 @@ int comparator (void* item1, void* item2) { //using global variable type in this
 		}
 		int i = 0;
 		while (i < least) {
-			if (str1[i] == str2[i]) {
-				i++;
-				continue;
-			} else if (str1[i] > str2[i]) {
-				return 2;
-			} else {
-				return 1;
+			if (str1[i] != str2[i]) {
+				return ((int)(str1[i] - str2[i]));
 			}
+			i++; 
 		}
+		return 0;
 	} else { //int comparison
 		if (*(int*)item1 == *(int*)item2) { //casts them as ints then dereferences them to avoid errors i think
 			return 1; //returns 1 if we are to insurt item1
@@ -293,7 +290,7 @@ int insertionSort(void* toSort, int (*comparator)(void*,void*)) { //String sort 
 			char* comp;
 			strcpy(comp,stringSort[j]);
 			k = j-1;
-			while (k >= 0 && comparator(stringSort[k],comp) == 2) {
+			while (k >= 0 && comparator(stringSort[k],comp) > 0) {
 				strcpy(stringSort[k+1],stringSort[k]);
 				k--;
 			}
