@@ -31,6 +31,8 @@ enum boolean commaDetect(char);
 enum boolean badChar(char);
 int insertionSort(void* toSort, int (*comparator)(void*,void*));
 int quickSort(void* toSort, int (*comparator)(void*,void*));
+int partition(int* arr, int low, int high, int(*comparator)(void*,void*));
+void quickSortRec(int* arr, int low, int high, int(*comparator)(void*,void*));
 
 int main(int argc, char** argv) { //need to fix it for empty strings like ",," and ", ," or ",\t,",
 //also need to add a function to free the LL
@@ -330,9 +332,10 @@ int quickSort(void* toSort, int (*comparator)(void*,void*)) {
 //maybe have the quicksort function return an array or make 2 (one for strings, one for ints) and call
 //it accordingly
 	printf("size of LL is: %d\n", LLSize);
+	printf("\n");
 	Node* ptr = (Node*)toSort;
 	Node* sorted = (Node*)toSort;
-	int high = LLSize;
+	int high = LLSize-1;
 	if(type == false) { //int
 		int* intSort = (int*)malloc(LLSize * sizeof(int));
 		int i = 0;
@@ -342,8 +345,16 @@ int quickSort(void* toSort, int (*comparator)(void*,void*)) {
 			//printf("int: %d\n",intSort[i]);
 			i++;
 		}
-
+		
+		quickSortRec(intSort, 0, high, comparator);
 			
+		int g = 0;
+		while (g < LLSize) {
+			sorted->data = intSort[g];
+			//printf("Sorted: %d\n",sorted->data);
+			sorted = sorted->next;
+			g++;	
+		}
 	} else { //string
 		char** stringSort = (char**)malloc(LLSize * sizeof(char*));
 		int i = 0;
@@ -355,16 +366,37 @@ int quickSort(void* toSort, int (*comparator)(void*,void*)) {
 		}
 	}
 	
-	
+	return 1;
 }
 
 int partition(int* arr, int low, int high, int(*comparator)(void*,void*)) {
+	int pivot = arr[high];
+	int i = (low-1);
+	int j = low;
+	while(j < high) {
+		if(arr[j] < pivot) {
+	//	if(comparator(&arr[j], &pivot) == 2) {
+			i++;
+			int temp = arr[i];
+			arr[i] = arr[j];
+			arr[j] = temp;
+		}
+		j++;
+	}
 
+	int temp = arr[i+1];
+	arr[i+1] = arr[high];
+	arr[high] = temp;
+
+	return i+1;
 }	
 
 void quickSortRec(int* arr, int low, int high, int(*comparator)(void*,void*)) {
-
-
+	if (low < high) {
+		int pi = partition(arr, low, high, comparator);
+		quickSortRec(arr, low, pi-1, comparator);
+		quickSortRec(arr, pi+1, high, comparator);
+	}
 }
 
 
