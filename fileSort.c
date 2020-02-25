@@ -9,19 +9,19 @@
 #include <ctype.h>
 //TODO:
 //QUICK SORT
-//DEBUGGING/FIXUPS
-//REALLOC MEMORY IN ORDER TO STORE ITEMS LARGER THAN 256 (P EASY TO DO I'LL HANDLE IT)
-//APPARENTLY FRANCISCO WILL TRY TO TIME OUR SHIT OUT SO MAYBE I'LL ADD SOMETHING TO READ IN MULTIPLE CHARS AT
-//A TIME BUT FOR NOW FRICK IT CUZ ASSIGNMENT SAYS OTHERWISE
+//DEBUGGING/FIXUPS (FIX COMPARATOR SO EMPTY STRING IS 0 OR '')
+//DEBUG LONG STRINGS >310, apparently seg fautlts after 345...
 enum boolean {true = 1, false = 0};//boolean var, do enum boolean to declare a new one (see function prototype below)
 
 
 enum boolean type = true; //true represents Strings, false represents ints
 
 int LLSize = 0; //used to store our stuff in an array to perform the sorts
+int bufferSize = 257; //used to expand buffer
 
 typedef struct _node {
-	char word[257];
+	char *word;//should just have to change this to a char* and then instead of strcpy 
+			//just set this equal to the word (shouldn't have to malloc this)
 	int data;
 	struct _node *next;
 	struct _node *prev;
@@ -40,7 +40,9 @@ void quickSortRec(int* arr, int low, int high, int(*comparator)(void*,void*));
 int main(int argc, char** argv) { //need to fix it for empty strings like ",," and ", ," or ",\t,",
 //also need to add a function to free the LL
 //apparently ,, in int version counts as a zero
-
+//gonna just read in the entire file all in one buffer, keep track of buffer size, realloc every time accordingly
+//parse through the buffer and extract tokens for each one (just gonna use a while loop to go through entire buffer and
+//extract everything
 	if (argc < 3) {
 		printf("Fatal Error: expected 3 arguments, got less\n");
 		exit(0);
@@ -64,7 +66,7 @@ int main(int argc, char** argv) { //need to fix it for empty strings like ",," a
 	int bytesRead = 1;
 	int count = 0;
 	int curr = 0;
-	char word[257]; 
+	char *word = (char*)malloc(bufferSize * sizeof(char)); 
 	//TOKENIZER, can chamge the Linked list stuff, don't touch the tokenizer unless you think theres an issue,
 	//functionality is right but it doesn't store it into the linked list properly
 	//DESCRIPTION: Tokenizer removes bad characters (spaces, tabs, new lines, and underscores) and only
@@ -82,13 +84,16 @@ int main(int argc, char** argv) { //need to fix it for empty strings like ",," a
 					head->data = atoi(word);
 					type = false; //ints
 				} else {
-					strcpy(head->word,word);
+					head->word = (char*)malloc(curr * sizeof(char));
+					word[curr+1] = '\0';
+					strcpy(head->word,word); //changed from strcpy
 					type = true; //strings 
 				}
 				head->next = NULL;
 				head->prev = NULL;
 				//printf("val of wordf: %s\n",head->data);
-				memset(word,'\0',257);
+				bufferSize = 257;
+				word = (char*)malloc(bufferSize * sizeof(char));	
 				headSet = true;
 				curr = 0;
 			} else {
@@ -98,20 +103,27 @@ int main(int argc, char** argv) { //need to fix it for empty strings like ",," a
 				if (type == false) {//type is ints
 					temp->data = atoi(word);
 				} else {//type is strings
-					strcpy(temp->word,word);
+					temp->word = (char*)malloc(curr * sizeof(char));
+					word[curr+1] = '\0';
+					strcpy(temp->word,word); //changed from strcpy
 				}
 				temp->next = head->next;
 				temp->prev = head;
 				head->prev = NULL;
 				head->next = temp;
 				//printf("val of wordt: %s\n",head->next->data);
-				memset(word,'\0',257);
+				bufferSize = 257;
+				word = (char*)malloc(bufferSize * sizeof(char));
 				curr = 0;
 			}
 			LLSize++;
 		}else if(badChar(buffer) == true) {
 			continue;
 		}  else {
+			if (strlen(word) == bufferSize - 1) {
+				word = (char*) realloc(word, bufferSize * 2);
+				bufferSize = bufferSize * 2;
+			}	
 			word[curr] = buffer;
 			curr++;
 		}
@@ -124,7 +136,13 @@ int main(int argc, char** argv) { //need to fix it for empty strings like ",," a
 		if (type == false) {//type is ints
 			temp->data = atoi(word);
 		} else {//type is strings
-			strcpy(temp->word,word);
+			temp->word = (char*)malloc(curr * sizeof(char));
+			bufferSize = 257;
+			word[curr+1] = '\0';
+			strcpy(temp->word,word);//changed from strcpy
+			//printf("b4 list: %s\n",temp->word);
+			//printf("size: %d\n",strlen(temp->word));
+			//printf("made it: %s\n",temp->word);
 		}
 		temp->next = head->next;
 		temp->prev = head;
@@ -172,7 +190,7 @@ int main(int argc, char** argv) { //need to fix it for empty strings like ",," a
 		}	
 	}
 	*/
-	LLIterator(head);	
+	LLIterator(head);
 	close(fd);
 	return 0;
 
@@ -225,12 +243,10 @@ enum boolean commaDetect(char input) {
 int comparator (void* item1, void* item2) { //using global variable type in this case to determine whether we are working with strings or ints
 	if (type == true) { //String comparison 
 		int least;
-		char str1[257];
-		char str2[257];
-		strcpy(str1,item1);
-		strcpy(str2,item2);
 		int len1 = strlen(item1);
 		int len2 = strlen(item2);
+		char *str1 = (char*)(item1); 
+		char *str2 = (char*)(item2); 
 		if (len1 > len2) {
 			least = len2;	
 		} else {
@@ -305,20 +321,23 @@ int insertionSort(void* toSort, int (*comparator)(void*,void*)) { //String sort 
 		int j = 1;
 		int k = 0;
 		while (j < LLSize) {
-			char* comp;
+			char *comp;
 			strcpy(comp,stringSort[j]);
 			k = j-1;
-			while (k >= 0 && comparator(stringSort[k],comp) > 0) {
+			while (k >= 0 && comparator(stringSort[k],comp/*comp*/) > 0) {
 				strcpy(stringSort[k+1],stringSort[k]);
 				k--;
 			}
-			strcpy(stringSort[k+1],comp);
+			strcpy(stringSort[k+1],comp/*comp*/);
 			j++;
 		}
 		//printf("SORTED VALS\n");
 		int g = 0;
 		while (g < LLSize) {
-			strcpy(sorted->word,stringSort[g]);
+				
+			//strcpy(sorted->word,stringSort[g]);
+			//printf("stringSort[g]: %s\n",stringSort[g]);
+			sorted->word = stringSort[g];
 			//printf("Sorted: %s\n", sorted->word);
 			sorted = sorted->next;
 			g++;
@@ -367,6 +386,7 @@ int quickSort(void* toSort, int (*comparator)(void*,void*)) {
 			//printf("string: %s\n",stringSort[i]);
 			i++;
 		}
+		
 	}
 	
 	return 1;
