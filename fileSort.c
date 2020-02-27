@@ -121,8 +121,12 @@ int main(int argc, char** argv) { //need to fix it for empty strings like ",," a
 			continue;
 		}  else {
 			if (strlen(word) == bufferSize - 1) {
-				word = (char*) realloc(word, bufferSize * 2);
+				//word = (char*) realloc(word, bufferSize * 2);
+				char* temp = (char*)malloc(bufferSize * 2 * sizeof(char));
+				memcpy(temp,word,(bufferSize - 1));
 				bufferSize = bufferSize * 2;
+				word = temp;
+				free(temp);
 			}	
 			word[curr] = buffer;
 			curr++;
@@ -385,6 +389,13 @@ int quickSort(void* toSort, int (*comparator)(void*,void*)) {
 			ptr = ptr->next;
 			//printf("string: %s\n",stringSort[i]);
 			i++;
+		}
+		//quickSortRec(stringSort,0,high,comparator);
+		int g = 0;
+		while (g < LLSize) {
+			sorted->word = stringSort[g];
+			sorted = sorted->next;
+			g++;
 		}
 		
 	}
