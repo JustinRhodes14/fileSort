@@ -59,7 +59,12 @@ int main(int argc, char** argv) { //need to fix it for empty strings like ",," a
 	char sort = argv[1][1];
 	
 	int fd = open(argv[2],O_RDONLY);	
-	
+		
+	if (fd == -1) {
+		printf("Fatal Error: %s is not a valid file name\n",argv[2]);
+		exit(0);	
+	}
+
 	Node *head;
 	
 	enum boolean headSet = false;
@@ -250,10 +255,16 @@ int comparator (void* item1, void* item2) { //using global variable type in this
 		int len1 = strlen(item1);
 		int len2 = strlen(item2);
 		char *str1 = (char*)(item1); 
-		char *str2 = (char*)(item2); 
+		char *str2 = (char*)(item2);
 		if (len1 > len2) {
+			if (len2 == 0) {
+				return 1;
+			}
 			least = len2;	
 		} else {
+			if (len1 == 0) {
+				return 0;
+			}
 			least = len1;
 		}
 		int i = 0;
