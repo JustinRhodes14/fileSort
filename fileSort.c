@@ -9,7 +9,6 @@
 #include <ctype.h>
 //TODO:
 //QUICK SORT
-//DEBUGGING/FIXUPS (FIX COMPARATOR SO EMPTY STRING IS 0 OR '')
 //DEBUG LONG STRINGS >310, apparently seg fautlts after 345...
 enum boolean {true = 1, false = 0};//boolean var, do enum boolean to declare a new one (see function prototype below)
 
@@ -34,8 +33,10 @@ enum boolean commaDetect(char);
 enum boolean badChar(char);
 int insertionSort(void* toSort, int (*comparator)(void*,void*));
 int quickSort(void* toSort, int (*comparator)(void*,void*));
-int partition(int* arr, int low, int high, int(*comparator)(void*,void*));
-void quickSortRec(int* arr, int low, int high, int(*comparator)(void*,void*));
+int int_partition(int* arr, int low, int high, int(*comparator)(void*,void*));
+void int_quickSortRec(int* arr, int low, int high, int(*comparator)(void*,void*));
+int string_partition(char** arr, int low, int high, int(*comparator)(void*,void*));
+void string_quickSortRec(char** arr, int low, int high, int(*comparator)(void*,void*));
 
 int main(int argc, char** argv) { //need to fix it for empty strings like ",," and ", ," or ",\t,",
 //also need to add a function to free the LL
@@ -383,7 +384,7 @@ int quickSort(void* toSort, int (*comparator)(void*,void*)) {
 			i++;
 		}
 		
-		quickSortRec(intSort, 0, high, comparator);
+		int_quickSortRec(intSort, 0, high, comparator);
 			
 		int g = 0;
 		while (g < LLSize) {
@@ -401,7 +402,7 @@ int quickSort(void* toSort, int (*comparator)(void*,void*)) {
 			//printf("string: %s\n",stringSort[i]);
 			i++;
 		}
-		//quickSortRec(stringSort,0,high,comparator);
+		string_quickSortRec(stringSort,0,high,comparator);
 		int g = 0;
 		while (g < LLSize) {
 			sorted->word = stringSort[g];
@@ -414,7 +415,7 @@ int quickSort(void* toSort, int (*comparator)(void*,void*)) {
 	return 1;
 }
 
-int partition(int* arr, int low, int high, int(*comparator)(void*,void*)) {
+int int_partition(int* arr, int low, int high, int(*comparator)(void*,void*)) {
 	int pivot = arr[high];
 	int i = (low-1);
 	int j = low;
@@ -436,13 +437,44 @@ int partition(int* arr, int low, int high, int(*comparator)(void*,void*)) {
 	return i+1;
 }	
 
-void quickSortRec(int* arr, int low, int high, int(*comparator)(void*,void*)) {
+void int_quickSortRec(int* arr, int low, int high, int(*comparator)(void*,void*)) {
 	if (low < high) {
-		int pi = partition(arr, low, high, comparator);
-		quickSortRec(arr, low, pi-1, comparator);
-		quickSortRec(arr, pi+1, high, comparator);
+		int pi = int_partition(arr, low, high, comparator);
+		int_quickSortRec(arr, low, pi-1, comparator);
+		int_quickSortRec(arr, pi+1, high, comparator);
 	}
 }
+
+int string_partition(char** arr, int low, int high, int(*comparator)(void*,void*)) {
+	char* pivot = arr[high];
+	int i = (low-1);
+	int j = low;
+	while(j < high) {
+	//	if(arr[j] < pivot) {
+		if(comparator(arr[j], pivot) <= 0) {
+			i++;
+			char* temp = arr[i];
+			arr[i] = arr[j];
+			arr[j] = temp;
+		}
+		j++;
+	}
+
+	char* temp = arr[i+1];
+	arr[i+1] = arr[high];
+	arr[high] = temp;
+
+	return i+1;
+}	
+
+void string_quickSortRec(char** arr, int low, int high, int(*comparator)(void*,void*)) {
+	if (low < high) {
+		int pi = string_partition(arr, low, high, comparator);
+		string_quickSortRec(arr, low, pi-1, comparator);
+		string_quickSortRec(arr, pi+1, high, comparator);
+	}
+}
+
 
 
 
