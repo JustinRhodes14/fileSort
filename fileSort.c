@@ -81,10 +81,6 @@ int main(int argc, char** argv) { //need to fix it for empty strings like ",," a
 		do {
 		char buffer;
 		bytesRead = read(fd,&buffer,1);
-		if (bytesRead == 0 && headSet == false) {
-			printf("Warning: File is empty\n");
-			exit(0);
-		}
 		if (commaDetect(buffer) == true){//Need to fix these LL's yo
 			if (headSet == false) {
 				head = (Node*)malloc(sizeof(Node));
@@ -172,10 +168,15 @@ int main(int argc, char** argv) { //need to fix it for empty strings like ",," a
 			//printf("size: %d\n",strlen(temp->word));
 			//printf("made it: %s\n",temp->word);
 		}
-		temp->next = head->next;
-		temp->prev = head;
-		temp->prev = NULL;
-		head->next = temp;
+		if (headSet == false) {
+			head = temp;
+			temp->next = NULL;
+		} else {
+			temp->next = head->next;
+			temp->prev = head;
+			temp->prev = NULL;
+			head->next = temp;
+		}
 	}
 	//printf("val of word: %s\n", word); //This prints the last word of the tokenizer since it is stored
 						   //after the file is finished being browsed
@@ -183,6 +184,17 @@ int main(int argc, char** argv) { //need to fix it for empty strings like ",," a
 	//LLIterator(head);, will use this later
 	//printf("LLSize: %d\n", LLSize);
 	
+	
+	if (LLSize == 1) {
+		if(type == true) { //string
+			printf("%s\n",head->word);
+		} else {
+			printf("%d\n",head->data);
+		}
+		return 1;
+	} else if (LLSize == 0) {
+		printf("Warning: file is empty\n");	
+	} 
 	
 	int  (*fptr)(void*,void*);
 	fptr = comparator;	
