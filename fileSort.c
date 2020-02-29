@@ -8,8 +8,8 @@
 #include <string.h>
 #include <ctype.h>
 //TODO:
-//QUICK SORT
 //DEBUG LONG STRINGS >310, apparently seg fautlts after 345...
+//FIX FREE MAYBE (Memory leaks)
 enum boolean {true = 1, false = 0};//boolean var, do enum boolean to declare a new one (see function prototype below)
 
 
@@ -81,13 +81,21 @@ int main(int argc, char** argv) { //need to fix it for empty strings like ",," a
 		do {
 		char buffer;
 		bytesRead = read(fd,&buffer,1);
+		if (bytesRead == 0 && headSet == false) {
+			printf("Warning: File is empty\n");
+			exit(0);
+		}
 		if (commaDetect(buffer) == true){//Need to fix these LL's yo
 			if (headSet == false) {
 				head = (Node*)malloc(sizeof(Node));
 				//head->data = (char*)malloc(str * sizeof(char) + 1);
 				//head->word = word;
 				if (isdigit(word[0]) != 0 || word[0] == '-') {
-					head->data = atoi(word);
+					if (strlen(word) == 0) {
+						head->data = 0;
+					} else {
+						head->data = atoi(word);
+					}
 					type = false; //ints
 				} else {
 					head->word = (char*)malloc(curr * sizeof(char));
@@ -99,6 +107,7 @@ int main(int argc, char** argv) { //need to fix it for empty strings like ",," a
 				head->prev = NULL;
 				//printf("val of wordf: %s\n",head->data);
 				bufferSize = 257;
+				//memset(word,'\0',257);
 				word = (char*)malloc(bufferSize * sizeof(char));	
 				headSet = true;
 				curr = 0;
@@ -107,7 +116,11 @@ int main(int argc, char** argv) { //need to fix it for empty strings like ",," a
 				//temp->data = (char*)malloc(str * sizeof(char) + 1);
 				//temp->word = word;
 				if (type == false) {//type is ints
-					temp->data = atoi(word);
+					if (strlen(word) == 0) {
+						temp->data = 0;
+					} else {
+						temp->data = atoi(word);
+					}
 				} else {//type is strings
 					temp->word = (char*)malloc(curr * sizeof(char));
 					word[curr+1] = '\0';
@@ -119,6 +132,7 @@ int main(int argc, char** argv) { //need to fix it for empty strings like ",," a
 				head->next = temp;
 				//printf("val of wordt: %s\n",head->next->data);
 				bufferSize = 257;
+				//memset(word,'\0',257);
 				word = (char*)malloc(bufferSize * sizeof(char));
 				curr = 0;
 			}
@@ -144,7 +158,11 @@ int main(int argc, char** argv) { //need to fix it for empty strings like ",," a
 	Node *temp = (Node*)malloc(sizeof(Node));
 	//temp->word = word;
 		if (type == false) {//type is ints
-			temp->data = atoi(word);
+			if (strlen(word) == 0) {
+				temp->data = 0;
+			} else {
+				temp->data = atoi(word);
+			}
 		} else {//type is strings
 			temp->word = (char*)malloc(curr * sizeof(char));
 			bufferSize = 257;
@@ -201,6 +219,7 @@ int main(int argc, char** argv) { //need to fix it for empty strings like ",," a
 	}
 	*/
 	LLIterator(head);
+	freeLL(head);
 	close(fd);
 	return 0;
 
@@ -223,7 +242,6 @@ void LLIterator (Node *ptr) {
 
 //This should be good but maybe change it as you work on linked lists more
 void freeLL(Node *ptr) {
-
 	while(ptr != NULL) {
 		Node* temp = ptr->next;
 		Node* temp2 = ptr;
