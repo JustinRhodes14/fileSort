@@ -21,7 +21,6 @@ typedef struct _node {
 			//just set this equal to the word (shouldn't have to malloc this)
 	int data;
 	struct _node *next;
-	struct _node *prev;
 }Node;
 
 int comparator(void*,void*);
@@ -45,6 +44,11 @@ int main(int argc, char** argv) { //need to fix it for empty strings like ",," a
 	if (argc < 3) {
 		printf("Fatal Error: expected 3 arguments, got less\n");
 		exit(0);
+	}
+	
+	if (strlen(argv[1]) > 2 || strlen(argv[1]) < 2) {
+		printf("Fatal Error: %s is not a valid sort flag\n",argv[1]);
+		exit(0);	
 	}
 	
 	if (argv[1][0] != '-') {
@@ -98,11 +102,10 @@ int main(int argc, char** argv) { //need to fix it for empty strings like ",," a
 					type = true; //strings 
 				}
 				head->next = NULL;
-				head->prev = NULL;
 				//printf("val of wordf: %s\n",head->data);
 				bufferSize = 514;
 				//memset(word,'\0',257);
-				word = (char*)malloc(bufferSize * sizeof(char));	
+				word = (char*)malloc(bufferSize*sizeof(char));
 				headSet = true;
 				curr = 0;
 			} else {
@@ -121,13 +124,11 @@ int main(int argc, char** argv) { //need to fix it for empty strings like ",," a
 					strcpy(temp->word,word); //changed from strcpy
 				}
 				temp->next = head->next;
-				temp->prev = head;
-				head->prev = NULL;
 				head->next = temp;
 				//printf("val of wordt: %s\n",head->next->data);
 				bufferSize = 514;
 				//memset(word,'\0',257);
-				word = (char*)malloc(bufferSize * sizeof(char));
+				word = (char*)malloc(bufferSize*sizeof(char));
 				curr = 0;
 			}
 			LLSize++;
@@ -135,8 +136,12 @@ int main(int argc, char** argv) { //need to fix it for empty strings like ",," a
 			continue;
 		}  else {
 			if (strlen(word) == bufferSize - 1) {
-				word = (char*)realloc(word,bufferSize*2);
-				bufferSize = bufferSize*2;
+				//word = (char*) realloc(word, bufferSize * 2);
+				char* temp = (char*)malloc(bufferSize * 2 * sizeof(char));
+				memcpy(temp,word,(bufferSize - 1));
+				bufferSize = bufferSize * 2;
+				word = temp;
+				free(temp);
 			}	
 			word[curr] = buffer;
 			curr++;
@@ -155,7 +160,7 @@ int main(int argc, char** argv) { //need to fix it for empty strings like ",," a
 			}
 		} else {//type is strings
 			temp->word = (char*)malloc(curr * sizeof(char));
-			bufferSize = 257;
+			bufferSize = 514;
 			word[curr+1] = '\0';
 			strcpy(temp->word,word);//changed from strcpy
 			//printf("b4 list: %s\n",temp->word);
@@ -167,8 +172,6 @@ int main(int argc, char** argv) { //need to fix it for empty strings like ",," a
 			temp->next = NULL;
 		} else {
 			temp->next = head->next;
-			temp->prev = head;
-			temp->prev = NULL;
 			head->next = temp;
 		}
 	}
@@ -187,7 +190,8 @@ int main(int argc, char** argv) { //need to fix it for empty strings like ",," a
 		}
 		return 1;
 	} else if (LLSize == 0) {
-		printf("Warning: file is empty\n");	
+		printf("Warning: file is empty\n");
+		return 0;	
 	} 
 	
 	int  (*fptr)(void*,void*);
@@ -199,7 +203,7 @@ int main(int argc, char** argv) { //need to fix it for empty strings like ",," a
 		//printf("\n");
 		int t = quickSort(head, fptr);
 	}
-	printf("past the sorts\n");
+
 	/*
 	int i = 0;
 	
@@ -279,8 +283,8 @@ int comparator (void* item1, void* item2) { //using global variable type in this
 		int least;
 		int len1 = strlen(item1);
 		int len2 = strlen(item2);
-		char* str1 = item1;
-		char* str2 = item2;
+		char *str1 = (char*)(item1); 
+		char *str2 = (char*)(item2);
 		if (len1 > len2) {
 			if (len2 == 0) {
 				return 1;
@@ -288,11 +292,10 @@ int comparator (void* item1, void* item2) { //using global variable type in this
 			least = len2;	
 		} else {
 			if (len1 == 0) {
-				return 0;
+				return -1;
 			}
 			least = len1;
 		}
-		printf("len1: %d \n len2: %d\n",len1,len2);
 		int i = 0;
 		while (i < least) {
 			if (str1[i] != str2[i]) {
@@ -349,32 +352,34 @@ int insertionSort(void* toSort, int (*comparator)(void*,void*)) { //String sort 
 			sorted = sorted->next;
 			g++;	
 		}
-		free(intSort);
 	} else { //string sorting
 		char** stringSort = (char**)malloc(LLSize * sizeof(char*));
 		int i = 0;
 		while (i < LLSize) {
-			stringSort[i] = ptr->word; 
+			stringSort[i] = (char*)malloc(bufferSize * sizeof(char));
+			memset(stringSort[i],'\0',bufferSize);
+			strcpy(stringSort[i],ptr->word);;
 			ptr = ptr->next;
+			//printf("string: %s\n",stringSort[i]);
 			i++;
 		}
+	
 		//insertion sort
 		int j = 1;
 		int k = 0;
 		while (j < LLSize) {
-			char *comp = (char*)malloc(bufferSize * 2 * sizeof(char) + 1); 
+			char *comp = (char*)malloc(bufferSize*sizeof(char));
 			strcpy(comp,stringSort[j]);
-			
 			k = j-1;
-			while (k >= 0 && comparator(stringSort[k],comp/*comp*/) > 0) {
-				//stringSort[k+1] = stringSort[k];
+			while (k >= 0 && comparator(stringSort[k],comp) > 0) {
 				strcpy(stringSort[k+1],stringSort[k]);
 				k--;
 			}
-			//stringSort[k+1] = comp;
-			strcpy(stringSort[k+1],comp/*comp*/);
+			strcpy(stringSort[k+1],comp);
 			j++;
+			free(comp);
 		}
+
 		//printf("SORTED VALS\n");
 		int g = 0;
 		while (g < LLSize) {
@@ -386,13 +391,7 @@ int insertionSort(void* toSort, int (*comparator)(void*,void*)) { //String sort 
 			sorted = sorted->next;
 			g++;
 		}
-		/*
-		int sh = 0;
-		for (sh = 0; sh < LLSize; sh++) {
-			free(stringSort[sh]);
-		}
-		*/	
-		//free(stringSort);
+		
 	}// following this, everything is stored, now we can sort using the comparator (o god)
 	
 	
@@ -427,7 +426,6 @@ int quickSort(void* toSort, int (*comparator)(void*,void*)) {
 			sorted = sorted->next;
 			g++;	
 		}
-		free(intSort);
 	} else { //string
 		char** stringSort = (char**)malloc(LLSize * sizeof(char*));
 		int i = 0;
@@ -444,7 +442,7 @@ int quickSort(void* toSort, int (*comparator)(void*,void*)) {
 			sorted = sorted->next;
 			g++;
 		}
-		free(stringSort);	
+		
 	}
 	
 	return 1;

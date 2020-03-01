@@ -1,3 +1,15 @@
 TESTPLAN - HOW WE MADE SURE IT WORKS
 
-For this project, we ran our code through many different types of test cases. We tested at all stages of production, making sure all of our functions worked independently. At first, we tested to see if we could read bytes from the file properly, then we tested to see if we could store bytes in a linked list after every comma, and then we tested our comparator by comparing basic items. Lastly, we tested everything together when we completed our sorting functions. We tested long strings, negative numbers, empty strings in integer files, noise characters in both files, and empty strings in string files. Our code was able to compile for all of these, and handle very sizable words through testing. We were testing for segfaults or errors in storing the memory, and after all our tests, we concluded our file ran properly and handled all edge cases accordingly.
+For this project, we ran our code through many different types of test cases. We tested at all stages of production, making sure all of our functions worked independently. At first, we tested to see if we could read bytes from the file properly, then we tested to see if we could store bytes in a linked list after every comma, and then we tested our comparator by comparing basic items. Lastly, we tested everything together when we completed our sorting functions. We tested long strings, negative numbers, empty strings in integer files, noise characters in both files, and empty strings in string files. Our code was able to compile for all of these, and handle very sizable words through testing. We were testing for segfaults or errors in storing the memory, and after all our tests, we concluded our file ran properly and handled all edge cases accordingly. Below is a short description of each of the test files.
+
+test.txt
+	In this file, we were testing how the program worked for strings, this file had evolved quite a bit over time as we used multiple strings, strings with characters that would be cut out, empty strings, as well as strings of extreme size.
+
+test2.txt
+	In this file, we were testing how the program worked for integers. This file has also evolved quite a bit over time, as it went from a small amount of strings, to a larger amount of strings, we also put in characters that would be cut out in the int file, to make sure it would still print properly. For empty strings in the int file, we properly put 0 in the list of data to sort.
+
+test3.txt
+	In this file, we were testing to see how the program worked when only 1 input was given. The file properly reads in the one input, either an int or a string, and outputs that one value since a list of 1 is already sorted.
+
+test4.txt
+	In this file, we were testing to see how the program worked when dealing with an empty file. When running it, the program properly gave the user a warning indicating that the file was empty.

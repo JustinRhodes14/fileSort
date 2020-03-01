@@ -1,5 +1,7 @@
 fileSort.c - A user's guide on how to use the program
 
+Authors: Justin Rhodes (jgr85) & Gregorio Fuerte (grf27)
+
 RUNNING THE CODE
 
 In order to run the program, the user must choose between the two sort flags quicksort (-q) , or insertion sort (-i), as well as a file. In order to run the program, you first must compile using gcc fileSort.c, and run it using ./a.out <sort_flag> <file_name>
